@@ -200,38 +200,38 @@ class Participantes:
         ''' Valida que la longitud no sea mayor a 15 caracteres'''
         if event.char:
             if len(self.entryId.get()) >= 15:
-                self.entryId.insert(0,self.entry.Id.get()[:15])
+                self.entryId.insert(0,self.entryId.get()[:15])
                 self.entryId.delete(0,"end")
                 mssg.showerror('Atención!!','.. ¡Máximo 15 caracteres! ..')                         #en teoria, ya se ARREGLO el error de mas de 15 caracteres
         else:
               self.entryId.delete(15,"end")
 
 
-def valida_Fecha(self, event=None):                            #SE ARREGLO VALIDAR FECHA
-    fecha = self.entryFecha.get()
+    def valida_Fecha(self, event=None):                            #SE ARREGLO VALIDAR FECHA
+        fecha = self.entryFecha.get()
     
-    # Verificar si la fecha tiene el formato correcto (DD/MM/AAAA)
-    if len(fecha) != 10 or fecha[2] != '/' or fecha[5] != '/':
-        mssg.showerror("Error", "Formato incorrecto. Usa DD/MM/YYYY")
-        self.entryFecha.delete(0, "end")
-        return
+        # Verificar si la fecha tiene el formato correcto (DD/MM/AAAA)
+        if len(fecha) != 10 or fecha[2] != '/' or fecha[5] != '/':
+            mssg.showerror("Error", "Formato incorrecto. Usa DD/MM/YYYY")
+            self.entryFecha.delete(0, "end")
+            return
     
-    try:
-        dia, mes, anio = map(int, fecha.split('/'))  # Separar día, mes y año
+        try:
+            dia, mes, anio = map(int, fecha.split('/'))  # Separar día, mes y año
         
-        # Verificar si el mes está en el rango válido (1-12)
-        if mes < 1 or mes > 12:
-            raise ValueError
+            # Verificar si el mes está en el rango válido (1-12)
+            if mes < 1 or mes > 12:
+                raise ValueError
         
-        # Verificar la cantidad de días correctos en cada mes
-        dias_en_mes = calendar.monthrange(anio, mes)[1]  # Obtiene el número de días del mes
+            # Verificar la cantidad de días correctos en cada mes
+            dias_en_mes = calendar.monthrange(anio, mes)[1]  # Obtiene el número de días del mes
         
-        if dia < 1 or dia > dias_en_mes:
-            raise ValueError
+            if dia < 1 or dia > dias_en_mes:
+                raise ValueError
 
-    except ValueError:
-        mssg.showerror("Error", "Fecha inválida. Verifica el día, mes y año")
-        self.entryFecha.delete(0, "end")
+        except ValueError:
+            mssg.showerror("Error", "Fecha inválida. Verifica el día, mes y año")
+            self.entryFecha.delete(0, "end")
     
 
     def carga_Datos(self):
@@ -246,13 +246,13 @@ def valida_Fecha(self, event=None):                            #SE ARREGLO VALID
 
     def limpia_Campos(self):                                                              #SE ARREGLO LIMPIAR CAMPOS
         '''Limpia los campos de entrada después de realizar una acción'''
-    self.entryId.configure(state="normal")  # Habilitar Id en caso de ser necesario
-    self.entryId.delete(0, "end")
-    self.entryNombre.delete(0, "end")
-    self.entryDireccion.delete(0, "end")
-    self.entryCelular.delete(0, "end")
-    self.entryEntidad.delete(0, "end")
-    self.entryFecha.delete(0, "end")
+        self.entryId.configure(state="normal")  # Habilitar Id en caso de ser necesario
+        self.entryId.delete(0, "end")
+        self.entryNombre.delete(0, "end")
+        self.entryDireccion.delete(0, "end")
+        self.entryCelular.delete(0, "end")
+        self.entryEntidad.delete(0, "end")
+        self.entryFecha.delete(0, "end")
 
 
     def run_Query(self, query, parametros = ()):
@@ -280,7 +280,7 @@ def valida_Fecha(self, event=None):                            #SE ARREGLO VALID
         if self.actualiza:
             self.actualiza = None
             self.entryId.configure(state = 'readonly')
-            query = 'UPDATE t_participantes SET Id = ?,Nombre = ?,Dirección = ?,Celular = ?, Entidad = ?, Fecha = ? WHERE Id = ?'
+            query = 'UPDATE t_participantes SET Id = ?,Nombre = ?,Dirección = ?,Celular = ?, Entidad = ?, Fecha = ?, WHERE Id = ?'
             parametros = (self.entryNombre.get(), self.entryDireccion.get(),self.entryCelular.get(),
                            self.entryEntidad.get(), self.entryFecha.get(), self.entryId.get()       #SE ARREGLO ERROR EN LA ACTUALIZACION
                           )
