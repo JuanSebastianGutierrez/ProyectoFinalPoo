@@ -95,6 +95,8 @@ class Participantes:
         self.lblFecha.grid(column="0", padx="5", pady="15", row="5", sticky="w")
         
         #Entry Fecha
+        c = calendar.TextCalendar(calendar.SUNDAY)
+        c.prmonth(2025, 1-12)
         self.entryFecha = tk.Entry(self.lblfrm_Datos)
         self.entryFecha.configure(exportselection="true", justify="left",relief="groove", width="30")
         self.entryFecha.grid(column="1", row="5", sticky="w")
@@ -156,6 +158,8 @@ class Participantes:
 
         self.treeDatos = ttk.Treeview(self.win, height = 10, style="estilo.Treeview")
         self.treeDatos.place(x=380, y=10, height=340, width = 500)
+
+        self.treeDatos.configure(selectmode="browse")
 
        # Etiquetas de las columnas
         self.treeDatos["columns"]=("Nombre","Dirección","Celular","Entidad","Fecha")
