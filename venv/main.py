@@ -5,11 +5,12 @@ import tkinter.ttk as ttk
 from tkinter import messagebox as mssg
 import sqlite3
 import calendar
+import os 
 
 class Participantes:
     # nombre de la base de datos  y ruta 
-    path = r'C:\Users\junas\Documents\Ingenieria_Electrica\2024-2\Programacion Orientada a Objetos\Proyecto final\venv'
-    db_name = path + r'/Participantes.db'
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(BASE_DIR, "Participantes.db")
     actualiza = None
     def __init__(self, master=None):
         # Top Level - Ventana Principal
