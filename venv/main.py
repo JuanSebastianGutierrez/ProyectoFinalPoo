@@ -10,7 +10,8 @@ import os
 class Participantes:
     # nombre de la base de datos  y ruta 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    path = os.path.join(BASE_DIR, "Participantes.db")
+    DB_PATH = os.path.join(BASE_DIR, "db", "Participantes.db")
+    path = os.path.dirname(os.path.abspath(__file__))
     actualiza = None
     def __init__(self, master=None):
         # Top Level - Ventana Principal
@@ -96,8 +97,6 @@ class Participantes:
         self.lblFecha.grid(column="0", padx="5", pady="15", row="5", sticky="w")
         
         #Entry Fecha
-        c = calendar.TextCalendar(calendar.SUNDAY)
-        c.prmonth(2025, 1-12)
         self.entryFecha = tk.Entry(self.lblfrm_Datos)
         self.entryFecha.configure(exportselection="true", justify="left",relief="groove", width="30")
         self.entryFecha.grid(column="1", row="5", sticky="w")
@@ -198,14 +197,10 @@ class Participantes:
         self.mainwindow.mainloop()
 
     def valida_Identificacion(self, event=None):
-        ''' Valida que la longitud no sea mayor a 15 caracteres'''
-        if event.char:
-            if len(self.entryId.get()) >= 15:
-                self.entryId.insert(0,self.entryId.get()[:15])
-                self.entryId.delete(0,"end")
-                mssg.showerror('Atención!!','.. ¡Máximo 15 caracteres! ..')                         #en teoria, ya se ARREGLO el error de mas de 15 caracteres
-        else:
-              self.entryId.delete(15,"end")
+        if len(self.entryId.get()) >= 15 and event.char.isalnum():
+            self.entryId.delete(len(self.entryId.get())-1, "end")
+            mssg.showerror('Atención', 'Máximo 15 caracteres permitidos.')
+
 
 
     def valida_Fecha(self, event=None):                            #SE ARREGLO VALIDAR FECHA
@@ -256,32 +251,44 @@ class Participantes:
         self.entryFecha.delete(0, "end")
 
 
-    def run_Query(self, query, parametros = ()):
+    def run_Query(self, query, parametros=()):
         ''' Función para ejecutar los Querys a la base de datos '''
-        with sqlite3.connect(self.db_name) as conn:
-            cursor = conn.cursor()
-            result = cursor.execute(query, parametros)
-            conn.commit()
-        return result
-
+        try:
+            with sqlite3.connect(self.DB_PATH) as conn:
+                cursor = conn.cursor()
+                result = cursor.execute(query, parametros) if parametros else cursor.execute(query)
+                conn.commit()
+                return result.fetchall()
+        except sqlite3.Error as e:
+            mssg.showerror("Error en la base de datos", f"Ocurrió un error: {e}")
+            return None
+        
     def lee_tablaTreeView(self):
-        ''' Carga los datos de la BD y Limpia la Tabla tablaTreeView '''
-        tabla_TreeView = self.treeDatos.get_children()
-        for linea in tabla_TreeView:
-            self.treeDatos.delete(linea)
-        # Seleccionando los datos de la BD
-        query = 'SELECT * FROM t_participantes ORDER BY Id DESC'
+        ''' Lee los datos de la base de datos y los muestra en TreeView '''
+    
+        query = 'SELECT * FROM t_participantes'
         db_rows = self.run_Query(query)
-        # Insertando los datos de la BD en la tabla de la pantalla
+
+        if db_rows is None:  
+            print("Error al obtener datos de la base de datos")
+            return
+
+    # Limpiar datos previos en TreeView
+        for row in self.treeDatos.get_children():
+            self.treeDatos.delete(row)
+
+    # Insertar nuevos datos
         for row in db_rows:
-            self.treeDatos.insert('',0, text = row[0], values = [row[1],row[2],row[3],row[4],row[5]])
+            self.treeDatos.insert("", "end", text=row[0], values=row[1:])
+
+
         
     def adiciona_Registro(self, event=None):
         '''Adiciona un producto a la BD si la validación es True'''
         if self.actualiza:
             self.actualiza = None
             self.entryId.configure(state = 'readonly')
-            query = 'UPDATE t_participantes SET Id = ?,Nombre = ?,Dirección = ?,Celular = ?, Entidad = ?, Fecha = ?, WHERE Id = ?'
+            query = 'UPDATE t_participantes SET Id = ?,Nombre = ?, Dirección = ?, Celular = ?, Entidad = ?, Fecha = ? WHERE Id = ?'
             parametros = (self.entryNombre.get(), self.entryDireccion.get(),self.entryCelular.get(),
                            self.entryEntidad.get(), self.entryFecha.get(), self.entryId.get()       #SE ARREGLO ERROR EN LA ACTUALIZACION
                           )
